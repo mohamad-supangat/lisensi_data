@@ -1,0 +1,52 @@
+name: Auto commit
+
+on:
+
+  push:
+    branches:
+      - master
+
+  schedule:
+  - cron: "0 7,9,11,13 * * *" # See https://crontab.guru/#0_7,9,11_*_*_1,3
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+         persist-credentials: false
+         fetch-depth: 0
+
+      - name: Modify last update
+        run: |
+          d=`date '+%Y-%m-%dT%H:%M:%SZ'`
+          echo $d > LAST_UPDATED
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "hantamkoding@gmail.com"
+          git config --local user.name "Mohamad Supangat"
+          git add -A
+
+          arr[0]="chore(bot): 😂"
+          arr[1]="chore(bot): 😱"
+          arr[2]="chore(bot): 👿"
+          arr[3]="chore(bot): 💩"
+          arr[4]="chore(bot): 🙏 "
+          arr[5]="chore(bot): 🙈 "
+          arr[6]="chore(bot): 🐐"
+          arr[7]="chore(bot): 🤖"
+          arr[8]="chore(bot): 🟩"
+          arr[9]="chore(bot): 👻"
+
+          rand=$[$RANDOM % ${#arr[@]}]
+
+          git commit -m "${arr[$rand]} auto update json"
+
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.5.0
+        with:
+          force: true
+          directory: "."
+          github_token: ${{ secrets.GITHUB_TOKEN }}
